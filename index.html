@@ -1,322 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VOIDED | Cosmic Interface</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOIDED | Terminal Relocation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-1: #050816;
-      --bg-2: #090b1a;
-      --bg-3: #11162b;
-      --text: #f5f7ff;
-      --muted: #b7bfdc;
-      --line: rgba(255,255,255,0.08);
-      --glass: rgba(255,255,255,0.06);
-      --glass-strong: rgba(255,255,255,0.1);
-      --accent: #a855f7;
-      --accent-2: #5b8cff;
-      --accent-3: #7cf7ff;
-      --shadow: 0 20px 60px rgba(0,0,0,0.45);
-      --radius: 28px;
+      --bg: #010206;
+      --acc: #8b5cf6;
+      --brd: rgba(255,255,255,0.08);
+      --text-dim: #64748b;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
+    * { box-sizing: border-box; cursor: none !important; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, Segoe UI, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 20%, rgba(168,85,247,0.18), transparent 30%),
-        radial-gradient(circle at 80% 30%, rgba(91,140,255,0.14), transparent 28%),
-        radial-gradient(circle at 50% 80%, rgba(124,247,255,0.08), transparent 25%),
-        linear-gradient(180deg, var(--bg-2), var(--bg-1) 35%, #04050e 100%);
-      overflow-x: hidden;
+      margin: 0; background: var(--bg); color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; overflow: hidden;
     }
 
-    a { color: inherit; text-decoration: none; }
-
-    .space-bg { position: fixed; inset: 0; z-index: -10; overflow: hidden; pointer-events: none; }
-
-    .stars, .stars2, .stars3 {
-      position: absolute; inset: -100%;
-      background-repeat: repeat;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      transform: translateZ(0);
+    /* CUSTOM CURSOR */
+    #cursor {
+      position: fixed; width: 8px; height: 8px; background: #fff;
+      border-radius: 50%; pointer-events: none; z-index: 9999;
+      box-shadow: 0 0 15px var(--acc); transform: translate(-50%, -50%);
     }
 
-    .stars {
-      background-image:
-        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.9), transparent 60%),
-        radial-gradient(1.5px 1.5px at 120px 80px, rgba(255,255,255,0.75), transparent 60%),
-        radial-gradient(1px 1px at 220px 160px, rgba(255,255,255,0.9), transparent 60%),
-        radial-gradient(2px 2px at 340px 40px, rgba(255,255,255,0.85), transparent 60%);
-      background-size: 420px 420px;
-      opacity: 0.7;
-      animation: starDrift 140s linear infinite;
+    .container { text-align: center; z-index: 10; width: min(600px, 90%); }
+    
+    .status-dot {
+      width: 8px; height: 8px; background: #facc15; border-radius: 50%;
+      display: inline-block; margin-right: 10px; box-shadow: 0 0 10px #facc15;
+      animation: blink 1.5s infinite;
     }
 
-    .stars2 {
-      background-image:
-        radial-gradient(1px 1px at 60px 90px, rgba(168,85,247,0.8), transparent 60%),
-        radial-gradient(1.5px 1.5px at 190px 140px, rgba(124,247,255,0.8), transparent 60%),
-        radial-gradient(1px 1px at 300px 60px, rgba(255,255,255,0.65), transparent 60%),
-        radial-gradient(1.5px 1.5px at 400px 200px, rgba(91,140,255,0.75), transparent 60%);
-      background-size: 520px 520px;
-      opacity: 0.45;
-      animation: starDriftReverse 220s linear infinite;
-      filter: blur(0.3px);
+    h1 { font-size: 3.5rem; letter-spacing: -3px; margin: 0; font-weight: 800; line-height: 1; }
+    .sub-title { color: var(--acc); font-weight: 800; letter-spacing: 4px; font-size: 10px; margin-bottom: 20px; }
+
+    .info-box {
+      margin-top: 40px; padding: 40px;
+      background: rgba(255,255,255,0.02); border: 1px solid var(--brd);
+      border-radius: 25px; backdrop-filter: blur(10px);
     }
 
-    .stars3 {
-      background-image:
-        radial-gradient(2px 2px at 120px 120px, rgba(255,255,255,0.35), transparent 60%),
-        radial-gradient(2px 2px at 320px 260px, rgba(168,85,247,0.35), transparent 60%),
-        radial-gradient(2px 2px at 500px 100px, rgba(124,247,255,0.28), transparent 60%);
-      background-size: 650px 650px;
-      opacity: 0.2;
-      animation: pulseStars 8s ease-in-out infinite;
+    .message { color: var(--text-dim); line-height: 1.6; margin-bottom: 30px; font-size: 15px; }
+
+    .new-url {
+      display: block; padding: 15px; background: #000; border: 1px solid var(--acc);
+      border-radius: 12px; color: #fff; font-family: 'JetBrains Mono';
+      text-decoration: none; font-size: 14px; transition: 0.3s;
     }
+    .new-url:hover { background: var(--acc); transform: scale(1.03); }
 
-    .nebula {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at 15% 25%, rgba(168,85,247,0.22), transparent 20%),
-        radial-gradient(circle at 85% 20%, rgba(91,140,255,0.16), transparent 18%),
-        radial-gradient(circle at 50% 70%, rgba(124,247,255,0.10), transparent 22%);
-      filter: blur(50px);
-      opacity: 0.9;
-    }
+    footer { margin-top: 60px; font-size: 9px; letter-spacing: 5px; opacity: 0.2; }
 
-    .glow-orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.35; animation: floatOrb 12s ease-in-out infinite; }
-    .orb-1 { width: 280px; height: 280px; top: 8%; left: 5%; background: rgba(168,85,247,0.25); }
-    .orb-2 { width: 240px; height: 240px; bottom: 10%; right: 7%; background: rgba(91,140,255,0.22); animation-delay: -4s; }
-    .orb-3 { width: 200px; height: 200px; top: 48%; left: 62%; background: rgba(124,247,255,0.16); animation-delay: -8s; }
-
-    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; position: relative; z-index: 1; }
-
-    .nav { position: sticky; top: 16px; z-index: 10; display: flex; justify-content: center; padding-top: 16px; }
-    .nav-inner { width: min(980px, 100%); display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; border: 1px solid var(--line); background: rgba(7, 10, 24, 0.58); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius: 999px; box-shadow: var(--shadow); }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; font-size: 0.95rem; }
-    .brand-dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-3)); box-shadow: 0 0 18px rgba(168,85,247,0.95), 0 0 28px rgba(124,247,255,0.55); }
-    .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
-    .nav-links a { color: var(--muted); padding: 10px 14px; border-radius: 999px; transition: 0.25s ease; font-size: 0.95rem; }
-    .nav-links a:hover { color: white; background: rgba(255,255,255,0.06); }
-
-    .hero { min-height: 100vh; display: grid; place-items: center; padding: 70px 0 30px; }
-    .hero-card { width: 100%; padding: 48px 32px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius: 36px; box-shadow: var(--shadow); position: relative; overflow: hidden; isolation: isolate; }
-    .hero-card::before { content: ""; position: absolute; inset: -1px; background: linear-gradient(135deg, rgba(168,85,247,0.35), transparent 25%, transparent 60%, rgba(124,247,255,0.18)); z-index: -1; opacity: 0.8; }
-
-    .badge { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #dde5ff; font-size: 0.9rem; letter-spacing: 0.04em; margin-bottom: 20px; }
-    .badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7cf7ff; box-shadow: 0 0 16px rgba(124,247,255,0.9); }
-
-    .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: center; }
-    .hero h1 { margin: 0; font-size: clamp(3rem, 9vw, 7rem); line-height: 0.95; letter-spacing: 0.14em; text-transform: uppercase; background: linear-gradient(180deg, #ffffff 0%, #c9b5ff 35%, #89d7ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 18px rgba(168,85,247,0.35)); }
-    .hero p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; max-width: 700px; margin: 20px 0 0; }
-
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
-    .btn { padding: 16px 24px; border-radius: 999px; font-weight: 800; letter-spacing: 0.06em; transition: 0.28s ease; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; min-width: 180px; }
-    .btn-primary { color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(91,140,255,0.22), 0 10px 30px rgba(168,85,247,0.22); }
-    .btn-primary:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 14px 34px rgba(91,140,255,0.3), 0 14px 34px rgba(168,85,247,0.32); }
-    .btn-secondary { color: white; border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); }
-    .btn-secondary:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); }
-
-    .hero-panel { border: 1px solid var(--line); border-radius: 28px; background: rgba(255,255,255,0.04); padding: 22px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-    .panel-top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
-    .panel-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.22); }
-    .panel-title { color: #dfe7ff; font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; margin-left: 8px; }
-
-    .status-card { padding: 18px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 12px; }
-    .status-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-    .status-head strong { font-size: 1rem; }
-    .pill { padding: 7px 12px; border-radius: 999px; font-size: 0.82rem; border: 1px solid rgba(124,247,255,0.2); background: rgba(124,247,255,0.08); color: #baf8ff; }
-
-    .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-    .meta div { padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-    .meta span { display: block; color: var(--muted); font-size: 0.82rem; margin-bottom: 4px; }
-    .meta strong { font-size: 0.95rem; }
-
-    section { padding: 44px 0; }
-    .section-title { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 12px; letter-spacing: 0.04em; }
-    .section-text { color: var(--muted); max-width: 760px; line-height: 1.8; margin: 0 0 26px; }
-
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .card { position: relative; padding: 24px; border-radius: var(--radius); background: rgba(255,255,255,0.05); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease; overflow: hidden; }
-    .card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(140deg, rgba(168,85,247,0.12), transparent 40%, rgba(124,247,255,0.08)); opacity: 0; transition: 0.28s ease; }
-    .card:hover { transform: translateY(-6px); border-color: rgba(168,85,247,0.22); background: rgba(255,255,255,0.07); }
-    .card:hover::before { opacity: 1; }
-    .card-icon { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 18px; font-size: 1.2rem; background: linear-gradient(135deg, rgba(168,85,247,0.18), rgba(91,140,255,0.15)); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
-    .card h3 { margin: 0 0 10px; font-size: 1.15rem; }
-    .card p { margin: 0; color: var(--muted); line-height: 1.7; }
-
-    .timeline { display: grid; gap: 16px; margin-top: 24px; }
-    .timeline-item { padding: 22px; border-radius: 24px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: start; }
-    .timeline-date { color: #d9d3ff; font-weight: 700; letter-spacing: 0.04em; }
-    .timeline-item ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
-
-    .footer { padding: 70px 0 40px; text-align: center; color: #8b93b5; font-size: 0.95rem; }
-
-    @keyframes starDrift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-8%, -12%, 0); } }
-    @keyframes starDriftReverse { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(7%, 10%, 0); } }
-    @keyframes pulseStars { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.28; transform: scale(1.03); } }
-    @keyframes floatOrb { 0%, 100% { transform: translateY(0px) translateX(0px) scale(1); } 50% { transform: translateY(-18px) translateX(10px) scale(1.05); } }
-
-    .fade-up { animation: fadeUp 0.9s ease both; }
-    .fade-up.delay-1 { animation-delay: 0.12s; }
-    .fade-up.delay-2 { animation-delay: 0.22s; }
-    .fade-up.delay-3 { animation-delay: 0.32s; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
-
-    @media (max-width: 920px) { .hero-grid, .cards, .timeline-item { grid-template-columns: 1fr; } .hero-card { padding: 36px 22px; } .nav-inner { border-radius: 24px; align-items: flex-start; flex-direction: column; } .meta { grid-template-columns: 1fr; } }
-    @media (max-width: 640px) { .hero h1 { letter-spacing: 0.08em; } .nav-links { width: 100%; } .nav-links a { flex: 1 1 auto; text-align: center; } .btn { width: 100%; } .hero-actions { flex-direction: column; } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .bg-glow { position: absolute; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(139, 92, 246, 0.05), transparent 70%); filter: blur(80px); z-index: 1; }
   </style>
 </head>
 <body>
-  <div class="space-bg">
-    <div class="nebula"></div>
-    <div class="stars"></div>
-    <div class="stars2"></div>
-    <div class="stars3"></div>
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
-    <div class="glow-orb orb-3"></div>
-  </div>
+
+  <div id="cursor"></div>
+  <div class="bg-glow"></div>
 
   <div class="container">
-    <nav class="nav">
-      <div class="nav-inner">
-        <div class="brand">
-          <span class="brand-dot"></span>
-          VOIDED™
-        </div>
-
-        <div class="nav-links">
-          <a href="#overview">Overview</a>
-          <a href="#features">Features</a>
-          <a href="#updates">Updates</a>
-          <a href="#download">Download</a>
-        </div>
-      </div>
-    </nav>
-
-    <header class="hero" id="overview">
-      <div class="hero-card">
-        <div class="hero-grid">
-          <div>
-            <div class="badge fade-up">Cosmic Interface • Smooth Galaxy Upgrade</div>
-            <h1 class="fade-up delay-1">VOIDED™</h1>
-            <p class="fade-up delay-2">
-              A cleaner, smoother, more premium sci-fi landing page with animated stars, 
-              soft glassmorphism, glowing nebula effects and a polished futuristic layout.
-            </p>
-
-            <div class="hero-actions fade-up delay-3">
-              <a class="btn btn-primary" href="#download">Explore Download</a>
-              <a class="btn btn-secondary" href="#features">View Features</a>
-            </div>
-          </div>
-
-          <div class="hero-panel fade-up delay-2">
-            <div class="panel-top">
-              <span class="panel-dot"></span>
-              <span class="panel-dot"></span>
-              <span class="panel-dot"></span>
-              <span class="panel-title">System Panel</span>
-            </div>
-
-            <div class="status-card">
-              <div class="status-head">
-                <strong>VOIDED Interface</strong>
-                <span class="pill">Online</span>
-              </div>
-              <div style="color: var(--muted); line-height: 1.7;">
-                Sleek visual redesign with a galaxy atmosphere, better depth, hover effects, 
-                upgraded cards and a smoother premium feel.
-              </div>
-
-              <div class="meta">
-                <div><span>Version</span><strong>v5.0.0 Beta</strong></div>
-                <div><span>Theme</span><strong>Galaxy</strong></div>
-                <div><span>Status</span><strong>Stable</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <section id="features">
-      <h2 class="section-title">Premium Visual Upgrade</h2>
-      <p class="section-text">
-        This version focuses on atmosphere, smoother motion and better visual structure.
+    <div class="sub-title">MAINTENANCE & RELOCATION</div>
+    <h1>WE HAVE MOVED.</h1>
+    
+    <div class="info-box">
+      <div style="margin-bottom: 20px;"><span class="status-dot"></span> SYSTEM OFFLINE HERE</div>
+      <p class="message">
+        The VOIDED Terminal infrastructure has been migrated to a new high-speed endpoint. 
+        All current and future builds are now hosted exclusively at our new location.
       </p>
+      
+      <a href="https://web-rho-three-84.vercel.app/" class="new-url">
+        HTTPS://WEB-RHO-THREE-84.VERCEL.APP/
+      </a>
+    </div>
 
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon">✦</div>
-          <h3>Animated Starfield</h3>
-          <p>Multiple star layers move at different speeds to create soft parallax.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">◎</div>
-          <h3>Glass UI Design</h3>
-          <p>Frosted panels, subtle borders and glow accents for a polished look.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">➜</div>
-          <h3>Smoother Feel</h3>
-          <p>Better spacing, softer shadows and cleaner typography.</p>
-        </div>
-      </div>
-    </section>
+    <p style="margin-top: 30px; font-size: 12px; color: var(--text-dim);">
+      Please update your bookmarks. This endpoint will be decommissioned soon.
+    </p>
 
-    <section id="updates">
-      <h2 class="section-title">Latest Updates</h2>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-date">v3.0.0 Beta</div>
-          <div>
-            <ul>
-              <li>Finalized cosmic layout for official release</li>
-              <li>Enabled direct DLL download via GitHub</li>
-              <li>Optimized star animations for performance</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="download">
-      <h2 class="section-title">Download Section</h2>
-      <div class="hero-card" style="min-height: unset;">
-        <div class="hero-grid">
-          <div>
-            <div class="badge">Direct Access • Fast Download</div>
-            <h3 style="font-size: 2rem; margin: 0 0 14px;">Voided_Mod_Menu.dll</h3>
-            <p style="margin: 0; max-width: 560px;">
-              Get the latest build of VOIDED. Ensure you have the latest BepInEx version installed.
-            </p>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: center;">
-            <a href="Voided_Mod_Menu.dll" class="btn btn-primary" download>DOWNLOAD v5.0.0 Beta</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      © 2026 VOIDED — Cosmic interface redesign
-    </footer>
+    <footer>VOIDED™ PROTOCOL // 2026</footer>
   </div>
+
+  <script>
+    // Cursor Movement
+    const cursor = document.getElementById('cursor');
+    window.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // SECURITY: Disable Right-Click & F12
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = e => {
+      if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+        return false;
+      }
+    };
+  </script>
 </body>
 </html>
-
-
-
-
